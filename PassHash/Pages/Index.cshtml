@@ -1,0 +1,96 @@
+﻿@page
+@model EncodeModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Hashing</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Password</label>
+                            <input type="password" asp-for="@Model.EncodePayload.Password" class="form-control" id="username" placeholder="Enter Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label for="encodedPassword" class="form-label">Password:</label>
+                <div class="input-group">
+                    <input type="text" id="encodedPassword" class="encodedPassword form-control" value="@Model.EncodeView.Password" readonly>
+                    <span class="input-group-text" onclick="copyToClipboard('encodedPassword')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                        </svg>
+                    </span>                    
+                </div>
+
+                <label for="encodedSalt" class="form-label mt-2">Salt:</label>
+                <div class="input-group">
+                    <input type="text" id="encodedSalt" class="encodedPassword form-control" value="@Model.EncodeView.Salt" readonly>
+                    <span class="input-group-text" onclick="copyToClipboard('encodedSalt')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
+                        </svg>
+                    </span>
+                </div>
+                <input type="hidden" id="hiddenSqlInput" />
+                <div class="text-end mt-3">
+                    <button type="button" class="btn btn-primary" onclick="CopySql()">Copy SQL</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearFields()">Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function clearFields() {
+            document.getElementById("encodedPassword").value = "";
+            document.getElementById("encodedSalt").value = "";
+        }
+
+        function CopySql()
+        {
+            var password = document.getElementById("encodedPassword").value;
+            var salt = document.getElementById("encodedSalt").value;
+
+            if (password || salt) {
+                var sqlText = `SET password = '${password}', salt = '${salt}' WHERE `;
+
+                var hiddenInput = document.getElementById("hiddenSqlInput");
+                hiddenInput.value = sqlText;
+
+                hiddenInput.type = 'text';
+                hiddenInput.select();
+                document.execCommand("copy");
+                hiddenInput.type = 'hidden';
+
+                alert("SQL statement copied to clipboard!");
+            }
+        }
+
+        function copyToClipboard(elementId) 
+        {
+            var password = document.getElementById("encodedPassword").value;
+            var salt = document.getElementById("encodedSalt").value;
+
+            if (password || salt) {
+                var inputElement = document.getElementById(elementId);
+                inputElement.select();
+                document.execCommand("copy");
+
+                alert("copied to clipboard!");
+            }
+        }
+    </script>
+}
